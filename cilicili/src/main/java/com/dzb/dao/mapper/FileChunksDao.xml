@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dzb.dao.FileChunksDao">
+    <insert id="insertFileChunksInfo">
+        INSERT INTO file_chunk
+        (`md5`,num,`count`)
+        VALUES
+        (#{md5},#{num},#{count})
+    </insert>
+    <delete id="deleteFileChunkInfo">
+        DELETE FROM file_chunk
+        WHERE `md5`=#{md5}
+    </delete>
+
+
+    <select id="getChunksNumListByMd5" resultType="java.lang.Integer">
+        SELECT num
+        FROM file_chunk
+        WHERE md5=#{md5}
+    </select>
+    <select id="getFileChunkListByMd5" resultType="com.dzb.entity.FileChunks">
+        SELECT *
+        FROM file_chunk
+        WHERE md5=#{md5}
+    </select>
+</mapper>

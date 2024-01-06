@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dzb.dao.AdminDao">
+    <insert id="insertAdminByAdmin">
+        INSERT INTO admin
+        (`name`,account,`password`,`privileges`)
+        VALUES
+        (#{name},#{account},#{password},#{privileges})
+    </insert>
+    <update id="updateAdminPrivilegesByIdAndPrivileges">
+        UPDATE admin
+        SET privileges = #{privileges}
+        WHERE id = #{id}
+    </update>
+    <delete id="deleteAdminById">
+        DELETE
+        FROM admin
+        WHERE id=#{id}
+    </delete>
+
+
+    <select id="getAdminByAccount" resultType="com.dzb.entity.Admin">
+        SELECT *
+        FROM admin
+        WHERE account=#{account}
+    </select>
+    <select id="getAdminByAccountAndPassword" resultType="com.dzb.entity.Admin">
+        SELECT *
+        FROM admin
+        WHERE account=#{account} AND password=#{password}
+    </select>
+    <select id="getAllAdminListPage" resultType="com.dzb.controller.dto.AdminDto">
+        SELECT *
+        FROM admin
+        <where>
+            <if test="id!=0 and id!=null">
+                AND id=#{id}
+            </if>
+            <if test="name!='' and name!=null">
+                AND name like CONCAT('%',#{name},'%')
+            </if>
+        </where>
+        LIMIT #{pageStart},#{pageSize}
+    </select>
+    <select id="getAllAdminListCount" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM admin
+        <where>
+            <if test="id!=0 and id!=null">
+                AND id=#{id}
+            </if>
+            <if test="name!='' and name!=null">
+                AND name like CONCAT('%',#{name},'%')
+            </if>
+        </where>
+    </select>
+</mapper>

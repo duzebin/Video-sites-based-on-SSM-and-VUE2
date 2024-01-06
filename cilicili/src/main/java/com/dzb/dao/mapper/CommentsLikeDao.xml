@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dzb.dao.CommentsLikeDao">
+
+    <insert id="insertCommentsLikeByUidAndCid">
+        INSERT INTO comments_like
+        (uid,cid)
+        VALUES
+        (#{uid},#{cid})
+    </insert>
+
+    <delete id="deleteCommentsLikeByUidAndCid">
+        DELETE FROM comments_like
+        WHERE cid=#{cid} AND uid=#{uid}
+    </delete>
+    <delete id="deleteCommentsLikeByCommentsIdList" parameterType="java.util.List" >
+        DELETE FROM comments_like
+        WHERE cid IN
+        <foreach item="item" index="index" collection="commentsIdList" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <delete id="deleteCommentsLikeByCommentsId">
+        DELETE FROM comments_like
+        WHERE cid=#{commentsId}
+    </delete>
+
+
+    <select id="getCommentsLikeStateByCidListAndUid" resultType="java.lang.Integer">
+        SELECT cid
+        FROM comments_like
+        WHERE uid=#{uid} AND cid IN
+        <foreach item="item" index="index" collection="cidList" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+    <select id="getCommentsLikeStateByUidAndCid" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM comments_like
+        WHERE uid=#{uid} AND cid=#{cid}
+    </select>
+
+
+</mapper>

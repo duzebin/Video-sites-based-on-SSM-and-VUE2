@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+ 	       http://www.springframework.org/schema/beans
+ 	       http://www.springframework.org/schema/beans/spring-beans.xsd
+ 	       http://www.springframework.org/schema/context
+ 	       http://www.springframework.org/schema/context/spring-context.xsd
+           http://www.springframework.org/schema/aop
+           http://www.springframework.org/schema/aop/spring-aop.xsd
+           http://www.springframework.org/schema/tx
+           http://www.springframework.org/schema/tx/spring-tx.xsd">
+    <!--引入属性文件-->
+    <context:property-placeholder location="classpath:jdbc.properties"/>
+    <!--数据源-->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="driverClassName" value="${jdbc.driverClassName}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+    </bean>
+    
+    <!-- 配置 MyBatis的工厂 -->
+    <bean class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!-- 数据源 -->
+        <property name="dataSource" ref="dataSource" />
+        <!-- 配置MyBatis的核心配置文件所在位置 -->
+        <property name="configLocation"
+                  value="classpath:mybatis-config.xml" />
+        <property name="mapperLocations" value="classpath*:com/dzb/dao/mapper/*.xml"/>
+
+    </bean>
+    <!--扫描Dao包，创建动态代理对象, 会自动存储到spring IOC容器中-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!--指定要扫描的dao的包-->
+        <property name="basePackage" value="com.dzb.dao"/>
+    </bean>
+</beans>

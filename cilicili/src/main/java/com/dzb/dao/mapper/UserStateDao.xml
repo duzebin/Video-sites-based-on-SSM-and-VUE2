@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dzb.dao.UserStateDao">
+
+
+    <select id="getUserStateById" resultType="java.lang.String">
+        SELECT name
+        FROM user_state
+        WHERE id=#{uid}
+    </select>
+    <select id="getAllUserState" resultType="com.dzb.entity.UserState">
+        SELECT *
+        FROM user_state
+    </select>
+</mapper>

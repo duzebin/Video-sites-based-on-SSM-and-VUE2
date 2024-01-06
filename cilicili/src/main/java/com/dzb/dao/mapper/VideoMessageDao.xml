@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dzb.dao.VideoMessageDao">
+
+
+    <insert id="insertVideoMessage">
+        INSERT INTO `video_message`
+        (`aid`, `uid`, `vid`, `msg`, `time`, `state`)
+        VALUES
+        (#{aid}, #{uid}, #{vid},#{msg}, #{time}, #{state})
+    </insert>
+    <delete id="deleteVideoMessageByVid">
+        DELETE FROM `video_message`
+        WHERE vid=#{vid}
+    </delete>
+    <delete id="deleteVideoMessageByAId">
+        DELETE FROM `video_message`
+        WHERE aid=#{id}
+    </delete>
+    <select id="getVideoMessageListPageByUid" resultType="com.dzb.controller.dto.VideoMessageDto">
+        SELECT *
+        FROM video_message
+        WHERE uid=#{uid}
+        ORDER BY `time` DESC
+        LIMIT #{pageStart},#{pageSize}
+    </select>
+    <select id="getVideoMessageListCountByUid" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM video_message
+        WHERE uid=#{uid}
+    </select>
+    <select id="getVideoAuditDateByTimeRange" resultType="com.dzb.controller.dto.DateAndCountDto">
+        select COUNT(*) as count,DATE_FORMAT(`time`,'%Y-%m-%d') as date
+        FROM video_message
+        WHERE
+        <choose>
+            <when test="timeRange == 'Week'">
+                `time`>=DATE_SUB(NOW(), INTERVAL 1 WEEK)
+            </when>
+            <when test="timeRange == 'Month1'">
+                `time`>=DATE_SUB(NOW(), INTERVAL 1 MONTH)
+            </when>
+            <when test="timeRange == 'Month2'">
+                `time`>=DATE_SUB(NOW(), INTERVAL 2 MONTH)
+            </when>
+            <when test="timeRange == 'Month3'">
+                `time`>=DATE_SUB(NOW(), INTERVAL 3 MONTH)
+            </when>
+            <otherwise>
+                `time`>now()
+            </otherwise>
+        </choose>
+        GROUP BY date
+    </select>
+    <select id="getUserVideoAuditDataByTimeRangeAndAuditId"
+            resultType="com.dzb.controller.dto.DateAndCountDto">
+        select COUNT(*) as count,DATE_FORMAT(`time`,'%Y-%m-%d') as date
+        FROM video_message
+        WHERE uid=#{uid} AND state=#{state} AND
+        <choose>
+            <when test="timeRange == 'Week'">
+                `time`>=DATE_SUB(NOW(), INTERVAL 1 WEEK)
+            </when>
+            <when test="timeRange == 'Month1'">
+                `time`>=DATE_SUB(NOW(), INTERVAL 1 MONTH)
+            </when>
+            <when test="timeRange == 'Month2'">
+                `time`>=DATE_SUB(NOW(), INTERVAL 2 MONTH)
+            </when>
+            <when test="timeRange == 'Month3'">
+                `time`>=DATE_SUB(NOW(), INTERVAL 3 MONTH)
+            </when>
+            <otherwise>
+                `time`>now()
+            </otherwise>
+        </choose>
+        GROUP BY date
+    </select>
+</mapper>

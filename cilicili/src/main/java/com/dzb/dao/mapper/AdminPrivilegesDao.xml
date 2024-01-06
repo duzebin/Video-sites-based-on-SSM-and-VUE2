@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dzb.dao.AdminPrivilegesDao">
+
+
+    <select id="getAdminPrivilegesByPrivilegesId" resultType="java.lang.String">
+        SELECT name
+        FROM admin_privileges
+        WHERE id=#{privileges}
+    </select>
+    <select id="getAllAdminPrivilegesList" resultType="com.dzb.entity.AdminPrivileges">
+        SELECT *
+        FROM admin_privileges
+    </select>
+</mapper>

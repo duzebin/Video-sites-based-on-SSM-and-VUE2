@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dzb.dao.TagDao">
+
+
+    <insert id="insertTagByTagList" parameterType="java.util.List">
+        INSERT INTO tag(name) VALUES
+        <foreach item="item" index="index" collection="tagList" separator=",">
+            (
+                #{item}
+            )
+        </foreach>
+    </insert>
+    <select id="getTagListByTagList" resultType="com.dzb.entity.Tag" parameterType="java.util.List">
+        SELECT *
+        FROM tag
+        WHERE name IN
+        <foreach item="item" index="index" collection="tagList" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+    <select id="getTagIdListByTagList" resultType="java.lang.Integer" parameterType="java.util.List">
+        SELECT id
+        FROM tag
+        WHERE name IN
+        <foreach item="item" index="index" collection="tagList" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+    <select id="getTagNameListByTagList" resultType="java.lang.String">
+        SELECT name
+        FROM tag
+        WHERE name IN
+        <foreach item="item" index="index" collection="tagList" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+</mapper>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dzb.dao.VideoFilesDao">
+    <insert id="insertVideo">
+        INSERT INTO video_files
+        (uid,`md5`,`count`,`state`)
+        VALUES
+        (#{uid},#{md5},#{count},0)
+    </insert>
+
+    <update id="updateVideoFilesStateByVideoFile">
+        UPDATE `video_files`
+        SET `state`=#{state}
+        WHERE uid=#{uid} AND md5=#{md5} AND `count`=#{count}
+    </update>
+    <update id="updateVideoFilesVidByMd5AndUid">
+        UPDATE `video_files`
+        SET vid=#{vid}
+        WHERE uid=#{uid} AND md5=#{md5}
+    </update>
+    <delete id="deleteVideoFileByVid">
+        DELETE
+        FROM video_files
+        WHERE vid=#{vid}
+    </delete>
+
+    <select id="getVideoByMd5AndCount" resultType="com.dzb.entity.VideoFiles">
+        SELECT *
+        FROM video_files
+        WHERE md5=#{md5} AND count=#{count}
+    </select>
+    <select id="getVideoFileListByUid" resultType="com.dzb.entity.VideoFiles">
+        SELECT *
+        FROM video_files
+        WHERE uid=#{uid}
+    </select>
+
+</mapper>

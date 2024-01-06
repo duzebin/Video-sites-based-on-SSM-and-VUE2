@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dzb.dao.UserDao">
+    <insert id="insertUser">
+        INSERT INTO user
+        (account,password,lastLogin,state)
+        VALUES
+        (#{account},#{password},#{lastLogin},#{state})
+    </insert>
+
+    <update id="updateUserLastLoginByUidAndTime">
+        UPDATE user
+        SET lastLogin = #{time}
+        WHERE uid = #{uid}
+    </update>
+    <update id="updateUserStateByUidAndState">
+        UPDATE user
+        SET state = #{state}
+        WHERE uid = #{uid}
+    </update>
+    <delete id="deleteUserByUid">
+        DELETE
+        FROM user
+        WHERE uid=#{uid}
+    </delete>
+
+    <select id="getUserByAccountWithPassword" resultType="com.dzb.entity.User">
+        SELECT *
+        FROM user
+        WHERE account=#{account} AND password=#{password}
+    </select>
+    <select id="getUserByAccount" resultType="com.dzb.entity.User">
+        SELECT *
+        FROM user
+        WHERE account=#{account}
+    </select>
+    <select id="getUserCountByAccount" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM user
+        WHERE account=#{account}
+    </select>
+    <select id="getUserByUid" resultType="com.dzb.entity.User">
+        SELECT *
+        FROM user
+        WHERE uid=#{uid}
+    </select>
+    <select id="getUserByUidList" resultType="com.dzb.entity.User">
+        SELECT *
+        FROM user
+        <where>
+            <if test="userIdList != null and userIdList.size() &gt; 0" >
+                AND uid IN
+                <foreach collection="userIdList" item="item" open="(" close=")" separator="," >
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+
+    </select>
+
+</mapper>

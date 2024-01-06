@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dzb.dao.VideoTagDao">
+    <resultMap type="com.dzb.controller.dto.VideoTagInfoDto" id="VideoTagWithTagContent">
+        <id property="id" column="id"/>
+        <result property="vid" column="vid"/>
+        <association property="tag" javaType="Tag">
+            <id property="id" column="tid"/>
+            <result property="name" column="name"/>
+        </association>
+    </resultMap>
+    <insert id="insertVideoTagByTagIdListAndVid">
+        INSERT INTO video_tag
+        (vid,tid)
+        VALUES
+        <foreach item="item" index="index" collection="tagIdList" separator=",">
+            (
+            #{vid},
+            #{item}
+            )
+        </foreach>
+    </insert>
+    <delete id="deleteVideoTagByVid">
+        DELETE
+        FROM video_tag
+        WHERE vid=#{vid}
+    </delete>
+
+    <select id="getVideoTagByVid" resultType="com.dzb.controller.dto.VideoTagInfoDto" resultMap="VideoTagWithTagContent">
+        SELECT *
+        FROM video_tag AS v JOIN tag AS t ON v.tid=t.id
+        WHERE v.vid=#{vid};
+    </select>
+    <select id="getVideoIdListPageByTid" resultType="java.lang.Integer">
+        SELECT DISTINCT  vid
+        FROM video_tag
+        WHERE tid=#{tid}
+        LIMIT #{pageStart},#{pageSize}
+    </select>
+    <select id="getVideoListCountByTid" resultType="java.lang.Integer">
+        SELECT COUNT( DISTINCT vid)
+        FROM video_tag
+        WHERE tid=#{tid}
+    </select>
+
+
+</mapper>

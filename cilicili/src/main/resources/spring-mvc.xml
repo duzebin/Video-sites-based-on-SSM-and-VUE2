@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       	    http://www.springframework.org/schema/beans/spring-beans.xsd
+       	    http://www.springframework.org/schema/mvc
+       	    http://www.springframework.org/schema/mvc/spring-mvc.xsd
+       	    http://www.springframework.org/schema/context
+       	    http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- 配置要扫描的包 -->
+    <context:component-scan base-package="com.dzb.controller"/>
+    <context:component-scan base-package="com.dzb.exception"/>
+
+    <mvc:cors>
+        <mvc:mapping path="/**" allowed-origins="*"
+                     allowed-methods="POST,GET,DELETE,PUT"
+                     allowed-headers="Content-Type, Access-Control-Allow-Headers,Authorization,X-Requested-with,token"
+                     allow-credentials="true"
+        />
+    </mvc:cors>
+
+    <!-- 配置视图解释器ViewResolver -->
+    <bean id="jspViewResolver" class=
+            "org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/jsp/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+    <mvc:default-servlet-handler/>
+    <mvc:annotation-driven>
+        <mvc:message-converters>
+            <bean class="org.springframework.http.converter.StringHttpMessageConverter"/>
+            <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="104857600" />
+        <property name="defaultEncoding" value="UTF-8"/>
+        <property name="resolveLazily" value="true"/>
+    </bean>
+
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <!-- 进行拦截：/**表示拦截所有controller -->
+            <mvc:mapping path="/**" />
+            <!-- 不进行拦截 -->
+            <mvc:exclude-mapping path="/Admin/**" />
+            <mvc:exclude-mapping path="/Comments/getChildCommentsPageList" />
+            <mvc:exclude-mapping path="/Comments/getMainCommentsPageList" />
+            <mvc:exclude-mapping path="/Episode/getEpisodeInfoByEpisodeId" />
+            <mvc:exclude-mapping path="/Level/getLevelUpExperienceByLevel" />
+            <mvc:exclude-mapping path="/Partition/getPartitionList" />
+            <mvc:exclude-mapping path="/Partition/getAllPartitionList" />
+            <mvc:exclude-mapping path="/Publicize/getPublicizeByType" />
+            <mvc:exclude-mapping path="/User/login" />
+            <mvc:exclude-mapping path="/User/enroll" />
+            <mvc:exclude-mapping path="/User/getUserInfoByUid" />
+            <mvc:exclude-mapping path="/Video/getAllVideo" />
+            <mvc:exclude-mapping path="/Video/getVideoInfoListPage" />
+            <mvc:exclude-mapping path="/Video/getVideoInfoListPageByVideoTag" />
+            <mvc:exclude-mapping path="/Video/getVideoInfoListPageByPartition" />
+            <mvc:exclude-mapping path="/Video/getVideoByVid" />
+            <mvc:exclude-mapping path="/Video/getEpisodeListByEpisodeId" />
+            <mvc:exclude-mapping path="/Video/getVideoTagByVid" />
+            <bean class="com.dzb.interceptor.JwtInterceptor" />
+        </mvc:interceptor>
+    </mvc:interceptors>
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <!-- 进行拦截：/**表示拦截所有controller -->
+            <mvc:mapping path="/Admin/**" />
+            <mvc:exclude-mapping path="/Admin/login" />
+            <bean class="com.dzb.interceptor.AdminJwtInterceptor" />
+        </mvc:interceptor>
+    </mvc:interceptors>
+
+</beans>

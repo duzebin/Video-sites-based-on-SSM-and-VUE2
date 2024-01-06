@@ -1,0 +1,9 @@
+本项目是基于ssm框架与vue2实现的视频网站   
+默认管理员账号账号为:admin,密码为：111111  
+默认用户账号为：111111，密码为：111111  
+引用插件：https://github.com/yleencc/vue-barrage-videoplayer  
+          https://github.com/kuan1/kuan-vue-flip-clock  
+因github无法上传超过100mb的文件故当您下载该项目后在使用时应当从后台管理中删除所有视频。  
+该项目由于使用了tomcat的静态资源路径作为视频的资源共享，pom.xml中tomcat7-maven-plugin插件版本对于静态资源路径有所错误，如使用资源站点下载的版本项目将会报错，您可自行解决或依照此链接内容解决：https://blog.csdn.net/weixin_40857593/article/details/84959938  
+该项目mysql数据库版本为8.0.28请注意版本，因制作时间有限部分功能并未达到最佳性能，您可自行引入redis数据库进行修改，或等待后续更新。  
+具体内容请查看项目说明书图。  

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dzb.dao.UserInfoDao">
+    <insert id="insertUserInfoByUserInfo">
+        INSERT INTO `user_info`
+        (`uid`, `uname`, `avatar`, `experience`, `level`, `describes`, `vip`, `concerns`, `fans`)
+        VALUES
+        (#{uid}, #{uname}, #{avatar}, #{experience}, #{level}, #{describes}, #{vip}, #{concerns}, #{fans})
+    </insert>
+
+    <update id="updateExperienceByUidAndNumber">
+        UPDATE user_info
+        SET experience = experience + #{loginExperience}
+        WHERE uid = #{uid}
+    </update>
+    <update id="updateLevelByUid">
+        UPDATE user_info
+        SET level = level + 1
+        WHERE uid = #{uid}
+    </update>
+    <update id="updateConcernsCountByUidAndType">
+        UPDATE user_info
+        SET
+        <if test="type=='add'">
+            concerns=concerns+1
+        </if>
+        <if test="type=='cancel'">
+            concerns=concerns-1
+        </if>
+        WHERE uid=#{uid}
+    </update>
+    <update id="updateFansCountByUidAndType">
+        UPDATE user_info
+        SET
+        <if test="type=='add'">
+            fans=fans+1
+        </if>
+        <if test="type=='cancel'">
+            fans=fans-1
+        </if>
+        WHERE uid=#{uid}
+    </update>
+    <update id="updateUserConcernCountByUidList">
+        UPDATE user_info
+        SET concerns=concerns-1
+        WHERE uid IN
+        <if test="uidList != null and uidList.size() &gt; 0">
+            <foreach collection="uidList" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+    </update>
+    <update id="updateUserFansCountByUidList">
+        UPDATE user_info
+        SET fans=fans-1
+        WHERE uid IN
+        <if test="uidList != null and uidList.size() &gt; 0">
+            <foreach collection="uidList" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+    </update>
+    <update id="updateUserInfoByUserInfo">
+        UPDATE user_info
+        SET uname=#{uname},describes=#{describes},avatar=#{avatar}
+        WHERE uid=#{uid}
+    </update>
+    <delete id="deleteUserInfoByUid">
+        DELETE
+        FROM user_info
+        WHERE uid=#{uid}
+    </delete>
+
+    <select id="getUserInfoByUid" resultType="com.dzb.entity.UserInfo">
+        SELECT *
+        FROM user_info
+        WHERE uid=#{uid}
+    </select>
+    <select id="getAllUserInfoListPage" resultType="com.dzb.controller.dto.UserInfoDto">
+        SELECT *
+        FROM user_info
+        <where>
+            <if test="uid!=0 and uid!=null">
+                AND uid=#{uid}
+            </if>
+            <if test="uname!='' and uname!=null">
+                AND uname like CONCAT('%',#{uname},'%')
+            </if>
+        </where>
+    </select>
+    <select id="getAllUserInfoListCount" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM user_info
+        <where>
+            <if test="uid!=0 and uid!=null">
+                AND uid=#{uid}
+            </if>
+            <if test="name!='' and name!=null">
+                AND name like CONCAT('%',#{uname},'%')
+            </if>
+        </where>
+    </select>
+</mapper>

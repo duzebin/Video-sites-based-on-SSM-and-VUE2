@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dzb.dao.VideoLikeDao">
+    <insert id="insertVideoLikeByVidAndUid">
+        INSERT INTO video_like
+        (uid,vid)
+        VALUES
+        (#{uid},#{vid})
+    </insert>
+
+    <delete id="deleteVideoLikeByVidAndUid">
+        DELETE
+        FROM video_like
+        WHERE uid=#{uid} AND vid=#{vid}
+    </delete>
+    <delete id="deleteVideoLikeByVid">
+        DELETE
+        FROM video_like
+        WHERE vid=#{vid}
+    </delete>
+    <delete id="deleteVideoLikeByUid">
+        DELETE
+        FROM video_like
+        WHERE uid=#{uid}
+    </delete>
+
+    <select id="getVideoLikeStateByVidAndUid" resultType="java.lang.Integer">
+        SELECT Count(*)
+        FROM video_like
+        WHERE uid=#{uid} AND vid=#{vid}
+    </select>
+    <select id="getVideoIdByUid" resultType="java.lang.Integer">
+        SELECT vid
+        FROM video_like
+        WHERE uid=#{uid}
+    </select>
+</mapper>

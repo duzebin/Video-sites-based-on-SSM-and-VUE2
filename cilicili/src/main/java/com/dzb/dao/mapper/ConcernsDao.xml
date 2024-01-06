@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dzb.dao.ConcernsDao">
+    <insert id="insertConcernsByUidAndFansUid">
+        INSERT INTO concerns
+        (uid,fans)
+        VALUES
+        (#{uid},#{fansUid})
+    </insert>
+
+    <delete id="deleteConcernsByUidAndFansUid">
+        DELETE
+        FROM concerns
+        WHERE uid=#{uid} AND fans=#{fansUid}
+    </delete>
+    <delete id="deleteConcernsByUid">
+        DELETE
+        FROM concerns
+        WHERE uid=#{uid} or fans=#{uid}
+    </delete>
+
+    <select id="getConcernsStateByUidAndFansUid" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM concerns
+        WHERE uid=#{uid} AND fans=#{fansUid}
+    </select>
+    <select id="getFansIdListByUid" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM concerns
+        WHERE uid=#{uid}
+    </select>
+    <select id="getConcernsIdListByUid" resultType="java.lang.Integer">
+        SELECT uid
+        FROM concerns
+        WHERE fans=#{uid}
+    </select>
+</mapper>

@@ -1,0 +1,446 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dzb.dao.VideoDao">
+    <resultMap type="com.dzb.controller.dto.VideoInfoDto" id="VideoWithUpVideoUserInfo">
+        <id property="vid" column="vid"/>
+        <result property="uid" column="uid"/>
+        <result property="title" column="title"/>
+        <result property="synopsis" column="synopsis"/>
+        <result property="cover" column="cover"/>
+        <result property="src" column="src"/>
+        <result property="play" column="play"/>
+        <result property="like" column="like"/>
+        <result property="favorites" column="favorites"/>
+        <result property="uptime" column="uptime"/>
+        <result property="partition" column="partition"/>
+        <result property="episode" column="episode"/>
+        <result property="state" column="state"/>
+        <association property="userInfo" javaType="UserInfo">
+            <result property="uid" column="uid"/>
+            <result property="uname" column="uname"/>
+            <result property="avatar" column="avatar"/>
+            <result property="experience" column="experience"/>
+            <result property="level" column="level"/>
+            <result property="describes" column="describes"/>
+            <result property="vip" column="vip"/>
+            <result property="vipEndTime" column="vipEndTime"/>
+            <result property="concerns" column="concerns"/>
+            <result property="fans" column="fans"/>
+        </association>
+    </resultMap>
+    <insert id="insertVideoByVideo">
+        INSERT INTO `video`
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            `uid`, `title`,
+            <if test="synopsis!='' and synopsis!=null">
+                `synopsis`,
+            </if>
+            `cover`,`src`,`play`, `like`, `favorites`, `uptime`,`partition`,
+            <if test="episode!=0 and episode!=null">
+                `episode`,
+            </if>
+            `state`
+        </trim>
+        VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            #{uid}, #{title},
+            <if test="synopsis!='' and synopsis!=null">
+                #{synopsis},
+            </if>
+            #{cover},#{src},0, 0, 0, #{uptime},#{partition},
+            <if test="episode!='' and episode!=null">
+                #{episode},
+            </if>
+            2
+        </trim>
+
+    </insert>
+
+    <update id="updateVideoFavoritesCountByVidAndType">
+        UPDATE video
+        SET
+        <if test="type=='add'">
+            favorites=favorites+1
+        </if>
+        <if test="type=='cancel'">
+            favorites=favorites-1
+        </if>
+        WHERE vid=#{vid}
+    </update>
+    <update id="updateVideoLikeCountByVidAndType">
+        UPDATE video
+        SET
+        <if test="type=='add'">
+            `like`=`like`+1
+        </if>
+        <if test="type=='cancel'">
+            `like`=`like`-1
+        </if>
+        WHERE vid=#{vid}
+    </update>
+    <update id="updateVideoByVideo">
+        UPDATE video
+        <set>
+            <if test="title!='' and title!=null">
+                title=#{title},
+            </if>
+            <if test="episode!=0">
+                episode=#{episode},
+            </if>
+            <if test="episode==0 or episode==null">
+                episode=Null,
+            </if>
+            <if test="synopsis!='' and synopsis!=null">
+                synopsis=#{synopsis},
+            </if>
+            <if test="cover!='' and cover!=null">
+                `cover`=#{cover},
+            </if>
+            state=#{state}
+        </set>
+        WHERE vid=#{vid}
+    </update>
+    <update id="updateVideoStateByVid">
+        UPDATE video
+        SET `state`=#{state}
+        WHERE vid=#{vid}
+    </update>
+    <update id="updateVideoFavoritesByVideoIdList">
+        UPDATE video
+        SET favorites=favorites-1
+        WHERE
+        <if test="videoIdList != null and videoIdList.size() &gt; 0">
+            vid IN
+            <foreach collection="videoIdList" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+    </update>
+    <update id="updateVideoLikeByVideoIdList">
+        UPDATE video
+        SET `like`=`like`-1
+        WHERE
+        <if test="videoIdList != null and videoIdList.size() &gt; 0">
+            vid IN
+            <foreach collection="videoIdList" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+    </update>
+    <update id="updateVideoEpisodeByEpisodeId">
+        UPDATE `video`
+        SET `episode`=NULL
+        WHERE `episode`=#{id}
+    </update>
+    <delete id="deleteVideoByVid">
+        DELETE
+        FROM video
+        WHERE vid=#{vid}
+    </delete>
+
+
+    <select id="getAllVideo" resultType="com.dzb.controller.dto.VideoInfoDto" resultMap="VideoWithUpVideoUserInfo">
+        SELECT *
+        FROM video AS v JOIN user_info AS ui ON v.uid=ui.uid
+    </select>
+    <select id="getVideoByVid" resultType="com.dzb.controller.dto.VideoInfoDto" resultMap="VideoWithUpVideoUserInfo">
+        SELECT *
+        FROM video AS v JOIN user_info as ui ON v.uid=ui.uid
+        WHERE v.vid=#{vid}
+    </select>
+    <select id="getEpisodeListByEpisodeId" resultType="com.dzb.entity.Video">
+        SELECT *
+        FROM video
+        WHERE episode=#{episodeId} AND state=1
+    </select>
+    <select id="getVideoUidByVid" resultType="java.lang.Integer">
+        SELECT uid
+        FROM video
+        WHERE vid=#{vid}
+    </select>
+    <select id="getLastVideoInfoByUid" resultType="com.dzb.entity.Video">
+        SELECT *
+        FROM video
+        WHERE uid=#{uid}
+        ORDER BY vid DESC
+        LIMIT 0,1
+    </select>
+    <select id="getUserUploadVideoInfoPageList" resultType="com.dzb.entity.Video">
+        SELECT *
+        FROM video
+        WHERE uid=#{uid}
+        <if test="state!=0 and state!=null">
+            AND state=#{state}
+        </if>
+        LIMIT #{pageStart},#{pageSize}
+    </select>
+    <select id="getVideoCountByStateAndUid" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM video
+        WHERE uid=#{uid}
+        <if test="state!=0 and state!=null">
+            AND state=#{state}
+        </if>
+    </select>
+
+    <select id="getAllVideoByState" resultType="com.dzb.controller.dto.VideoInfoDto"
+            resultMap="VideoWithUpVideoUserInfo">
+        SELECT *
+        FROM video AS v JOIN user_info AS ui ON v.uid=ui.uid
+        WHERE state=#{state}
+    </select>
+    <select id="getAllVideoCount" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM video
+        <where>
+            <if test="uid!=null and uid!=0">
+                AND uid=#{uid}
+            </if>
+            <if test="vid!=null and vid!=0">
+                AND vid=#{vid}
+            </if>
+            <if test="state!=null and state!=0">
+                AND state=#{state}
+            </if>
+            <if test="partition!=null and partition!=''">
+                AND `partition`=#{partition}
+            </if>
+        </where>
+    </select>
+    <select id="getVideoPageList" resultType="com.dzb.controller.dto.VideoInfoDto">
+        SELECT *
+        FROM video
+        <where>
+            <if test="uid!=null and uid!=0">
+                AND uid=#{uid}
+            </if>
+            <if test="vid!=null and vid!=0">
+                AND vid=#{vid}
+            </if>
+            <if test="state!=null and state!=0">
+                AND state=#{state}
+            </if>
+            <if test="partition!=null and partition!=''">
+                AND `partition`=#{partition}
+            </if>
+        </where>
+        LIMIT #{pageStart},#{pageSize}
+    </select>
+    <select id="getVideoIdListByUid" resultType="java.lang.Integer">
+        SELECT vid
+        FROM video
+        WHERE uid=#{uid}
+    </select>
+    <select id="getVideoInfoListPageByUid" resultType="com.dzb.controller.dto.VideoInfoDto"
+            resultMap="VideoWithUpVideoUserInfo">
+        SELECT *
+        FROM video
+        WHERE uid=#{uid} AND state=1
+        <if test="sort=='New'">
+            ORDER BY uptime DESC
+        </if>
+        <if test="sort=='MostLike'">
+            ORDER BY `like` DESC
+        </if>
+        <if test="sort=='MostCollectible'">
+            ORDER BY favorites DESC
+        </if>
+        LIMIT #{pageStart},#{pageSize}
+    </select>
+    <select id="getVideoInfoListPageCountByUid" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM video
+        WHERE uid=#{uid} AND state=1
+    </select>
+    <select id="getEpisodeFirstVideoIdByEpisodeId" resultType="java.lang.Integer">
+        SELECT vid
+        FROM video
+        WHERE episode=#{episode}
+        LIMIT 1
+    </select>
+
+    <select id="getVideoByVideoIdList" resultType="com.dzb.controller.dto.VideoInfoDto"
+            resultMap="VideoWithUpVideoUserInfo">
+        SELECT *
+        FROM video AS v JOIN user_info as ui ON v.uid=ui.uid
+        WHERE
+        <if test="videoIdList != null and videoIdList.size() &gt; 0">
+            state=1 AND v.vid IN
+            <foreach collection="videoIdList" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+    <select id="getConcernUserVideoInfoListPageByUidList" resultType="com.dzb.controller.dto.VideoInfoDto"
+            resultMap="VideoWithUpVideoUserInfo">
+        SELECT *
+        FROM video AS v JOIN user_info as ui ON v.uid=ui.uid
+        WHERE
+        <if test="uidList != null and uidList.size() &gt; 0">
+            state=1 AND v.uid IN
+            <foreach collection="uidList" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        ORDER BY `uptime` DESC
+        LIMIT #{pageStart},#{pageSize}
+    </select>
+    <select id="getConcernUserVideoInfoListCountByUidList" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM video AS v JOIN user_info as ui ON v.uid=ui.uid
+        WHERE
+        <if test="uidList != null and uidList.size() &gt; 0">
+            state=1 AND
+            v.uid IN
+            <foreach collection="uidList" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+    <select id="getVideoInfoListPage" resultType="com.dzb.controller.dto.VideoInfoDto"
+            resultMap="VideoWithUpVideoUserInfo">
+        SELECT *
+        FROM video AS v JOIN user_info as ui ON v.uid=ui.uid
+        <where>
+            state=1
+            <if test="name!='' and name != null">
+                AND (
+                title like concat('%',#{name},'%') OR
+                synopsis like concat('%',#{name},'%') OR
+                vid=#{name}
+                )
+            </if>
+        </where>
+        <if test="sort=='New'">
+            ORDER BY uptime DESC
+        </if>
+        <if test="sort=='MostLike'">
+            ORDER BY `like` DESC
+        </if>
+        <if test="sort=='MostCollectible'">
+            ORDER BY favorites DESC
+        </if>
+        LIMIT #{pageStart},#{pageSize}
+    </select>
+    <select id="getVideoInfoListCount" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM video AS v JOIN user_info as ui ON v.uid=ui.uid
+        <where>
+            state=1
+            <if test="name!='' and name != null">
+                AND (
+                title like concat('%',#{name},'%') OR
+                synopsis like concat('%',#{name},'%') OR
+                vid=#{name}
+                )
+            </if>
+        </where>
+    </select>
+    <select id="getVideoInfoListPageByPartition" resultType="com.dzb.controller.dto.VideoInfoDto"
+            resultMap="VideoWithUpVideoUserInfo">
+        SELECT *
+        FROM video AS v JOIN user_info as ui ON v.uid=ui.uid
+        <where>
+            state=1
+            <if test="partition!='' and partition != null">
+                AND `partition` = #{partition}
+            </if>
+        </where>
+        <if test="sort=='New'">
+            ORDER BY uptime DESC
+        </if>
+        <if test="sort=='MostLike'">
+            ORDER BY `like` DESC
+        </if>
+        <if test="sort=='MostCollectible'">
+            ORDER BY favorites DESC
+        </if>
+        LIMIT #{pageStart},#{pageSize}
+    </select>
+    <select id="getVideoInfoListCountByPartition" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM video AS v JOIN user_info as ui ON v.uid=ui.uid
+        <where>
+            state=1
+            <if test="partition!='' and partition != null">
+                AND `partition` = #{partition}
+            </if>
+        </where>
+    </select>
+    <select id="getUserVideoAllLikeCount" resultType="java.lang.Integer">
+        SELECT SUM(`like`)
+        FROM video
+        WHERE uid=#{uid}
+    </select>
+    <select id="getTheVideoForReviewByTime" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM video
+        WHERE state=2 AND uptime>=#{time}
+    </select>
+    <select id="getTheVideoForReview" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM video
+        WHERE state=2
+    </select>
+    <select id="getVideoUploadDataByTimeRange" resultType="com.dzb.controller.dto.DateAndCountDto">
+        select COUNT(*) as count,DATE_FORMAT(uptime,'%Y-%m-%d') as date
+        FROM video
+        WHERE
+        <choose>
+            <when test="timeRange == 'Week'">
+                uptime>=DATE_SUB(NOW(), INTERVAL 1 WEEK)
+            </when>
+            <when test="timeRange == 'Month1'">
+                uptime>=DATE_SUB(NOW(), INTERVAL 1 MONTH)
+            </when>
+            <when test="timeRange == 'Month2'">
+                uptime>=DATE_SUB(NOW(), INTERVAL 2 MONTH)
+            </when>
+            <when test="timeRange == 'Month3'">
+                uptime>=DATE_SUB(NOW(), INTERVAL 3 MONTH)
+            </when>
+            <otherwise>
+                uptime>now()
+            </otherwise>
+        </choose>
+        GROUP BY date
+    </select>
+    <select id="getVideoIdAndVideoTitleByVidList" resultType="java.util.Map">
+        SELECT vid,title
+        FROM video
+        WHERE
+        <if test="vIdList != null and vIdList.size() &gt; 0">
+            vid IN
+            <foreach collection="vIdList" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+    <select id="getUserVideoUploadDataByTimeRange" resultType="com.dzb.controller.dto.DateAndCountDto">
+        select COUNT(*) as count,DATE_FORMAT(uptime,'%Y-%m-%d') as date
+        FROM video
+        WHERE uid=#{uid} AND
+        <choose>
+            <when test="timeRange == 'Week'">
+                uptime>=DATE_SUB(NOW(), INTERVAL 1 WEEK)
+            </when>
+            <when test="timeRange == 'Month1'">
+                uptime>=DATE_SUB(NOW(), INTERVAL 1 MONTH)
+            </when>
+            <when test="timeRange == 'Month2'">
+                uptime>=DATE_SUB(NOW(), INTERVAL 2 MONTH)
+            </when>
+            <when test="timeRange == 'Month3'">
+                uptime>=DATE_SUB(NOW(), INTERVAL 3 MONTH)
+            </when>
+            <otherwise>
+                uptime>now()
+            </otherwise>
+        </choose>
+        GROUP BY date
+    </select>
+
+
+
+</mapper>
